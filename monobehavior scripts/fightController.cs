@@ -17,6 +17,9 @@ public class fightController : MonoBehaviour
     public TextMeshPro fightCommentaryTMP;
     public GameObject winningSoundGO, losingSoundGO, battleBackgroundGO;
     private AudioSource winningSound, losingSound;
+    private bool hasPellet;
+    private int pelletPoints;
+    private in bonus;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +31,7 @@ public class fightController : MonoBehaviour
         this.theMonster = new Monster("Pink Ghost");
         this.hero_hp_TMP.text = "Current HP: " + MySingleton.thePlayer.getHP() + " AC: " + MySingleton.thePlayer.getAC();
         this.monster_hp_TMP.text = "Current HP: " + this.theMonster.getHP() + " AC: " + this.theMonster.getAC();
+        pelletPoints = 0;
 
         int num = Random.Range(0, 2); //coin flip, will produce 0 and 1 (since 2 is not included)
         if(num == 0)
@@ -47,7 +51,7 @@ public class fightController : MonoBehaviour
         StartCoroutine(MoveAndReturn());
         this.fightCommentaryTMP.text = "";
         //have attacker try to attack the defender
-        int attackRoll = Random.Range(0, 20)+1;
+        int attackRoll = Random.Range(0, 20)+bonus;
         if(attackRoll >= defender.getAC())
         {
             //attacker will hit the defender, lets see how hard!!!!
@@ -116,6 +120,8 @@ public class fightController : MonoBehaviour
                     Destroy(this.battleBackgroundGO);
 
                     this.shouldAttack = false;
+
+                    hasPellet = true;
                 }
                 else
                 {
@@ -144,6 +150,14 @@ public class fightController : MonoBehaviour
                     yield return new WaitForSeconds(0.75f);
                     StartCoroutine(fight());
                 }
+            }
+        }
+        if(hasPellet == true)
+        {
+            pelletPoints = pelletPoints + 1;
+            if(pelletPoints == 1)
+            {
+                bonus = 1;
             }
         }
         
